@@ -1,0 +1,3 @@
+docker:
+  quay.io/rsturla-dev/workbench:
+    use-sigstore-attachments: true

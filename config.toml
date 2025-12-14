@@ -1,0 +1,4 @@
+[[customizations.user]]
+name = "admin"
+key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFeQcabkZzEGhcwjykuvW/QZam3/hD2D+wnSxN3uQvmH robertsturla@outlook.com"
+groups = ["wheel", "docker"]

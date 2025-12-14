@@ -1,0 +1,3 @@
+brew "awscli"
+
+cask "claude-code"
