@@ -25,7 +25,8 @@ dnf install -y \
     zsh \
     ripgrep \
     socat \
-    direnv
+    direnv \
+    qemu-guest-agent
 
 # Remove just docs (contains non-ASCII filenames that break ostree deployment)
 rm -rf /usr/share/doc/just
@@ -170,5 +171,8 @@ EOF
 
 # Enable SSH server
 RUN systemctl enable sshd.service
+
+# Enable QEMU Guest Agent for Proxmox
+RUN systemctl enable qemu-guest-agent.service
 
 RUN bootc container lint
