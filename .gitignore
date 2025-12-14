@@ -4,3 +4,6 @@ output/
 # Cosign private keys - NEVER commit these
 cosign.key
 cosign-backup.key
+
+# SSH private keys - NEVER commit these
+keys/admin
