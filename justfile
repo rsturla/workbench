@@ -3,13 +3,18 @@ image_registry := "quay.io/rsturla-dev"
 image_name := "workbench"
 image_tag := "latest"
 image_ref := image_registry + "/" + image_name + ":" + image_tag
+installer_ref := image_registry + "/" + image_name + "-installer:" + image_tag
 
 # Output settings
 output_dir := "output"
 
 # Build the container image (rootless)
 build:
-    podman build -t {{ image_ref }} --iidfile /tmp/image.id -f Contianerfile .
+    podman build -t {{ image_ref }} --iidfile /tmp/image.id -f Contianerfile --no-cache .
+
+# Build the installer container image (rootless)
+build-installer:
+    podman build -t {{ installer_ref }} -f Containerfile.installer .
 
 # Transfer image from rootless to rootful storage (only if not already present or outdated)
 _transfer-image:
@@ -22,6 +27,19 @@ _transfer-image:
         podman image scp $USER@localhost::{{ image_ref }} root@localhost::
     else
         echo "Image already in root storage, skipping transfer."
+    fi
+
+# Transfer installer image from rootless to rootful storage
+_transfer-installer-image:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    LOCAL_ID=$(podman image inspect --format '{{{{.Id}}}}' {{ installer_ref }} 2>/dev/null || echo "")
+    ROOT_ID=$(sudo podman image inspect --format '{{{{.Id}}}}' {{ installer_ref }} 2>/dev/null || echo "")
+    if [[ "$LOCAL_ID" != "$ROOT_ID" ]]; then
+        echo "Transferring installer image to root storage..."
+        podman image scp $USER@localhost::{{ installer_ref }} root@localhost::
+    else
+        echo "Installer image already in root storage, skipping transfer."
     fi
 
 # Build a QEMU qcow2 disk image from the bootc container
@@ -63,7 +81,7 @@ build-raw: build _transfer-image
     sudo chown -R $(id -u):$(id -g) {{ output_dir }}
 
 # Build an ISO from the bootc container
-build-iso: build _transfer-image
+build-iso: build build-installer _transfer-image _transfer-installer-image
     mkdir -p {{ output_dir }}
     sudo podman run \
         --rm \
@@ -75,7 +93,8 @@ build-iso: build _transfer-image
         -v /var/lib/containers/storage:/var/lib/containers/storage \
         ghcr.io/osbuild/image-builder-cli \
         build bootc-installer \
-        --bootc-ref {{ image_ref }} \
+        --bootc-ref {{ installer_ref }} \
+        --bootc-installer-payload-ref {{ image_ref }} \
         --bootc-default-fs ext4 \
         --blueprint /config.toml \
         --output-dir /output

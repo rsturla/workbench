@@ -26,6 +26,9 @@ dnf install -y \
     ripgrep \
     socat \
     direnv
+
+# Remove just docs (contains non-ASCII filenames that break ostree deployment)
+rm -rf /usr/share/doc/just
 EOF
 
 # Install oh-my-zsh system-wide

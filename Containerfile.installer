@@ -1,0 +1,35 @@
+# Installer container for building bootc-installer ISOs
+# This container includes Anaconda and required tools for ISO creation
+FROM quay.io/fedora/fedora-bootc:latest
+
+RUN --mount=type=cache,target=/var/cache \
+    --mount=type=cache,target=/var/lib \
+    --mount=type=cache,target=/var/log \
+    --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/tmp \
+    dnf install -y \
+    anaconda \
+    anaconda-install-env-deps \
+    anaconda-dracut \
+    dracut-config-generic \
+    dracut-network \
+    net-tools \
+    squashfs-tools \
+    grub2-efi-x64-cdboot \
+    python3-mako \
+    lorax-templates-generic \
+    biosdevname \
+    prefixdevname
+
+# shim-x64 is marked installed but the files are not in the expected
+# place for osbuild's grub2.iso stage - reinstall to fix
+RUN --mount=type=cache,target=/var/cache \
+    --mount=type=cache,target=/var/lib \
+    --mount=type=cache,target=/var/log \
+    --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/tmp \
+    dnf reinstall -y shim-x64
+
+# lorax wants to create a symlink in /mnt which points to /var/mnt
+# on bootc but /var/mnt does not exist on some images
+RUN mkdir -p /var/mnt
