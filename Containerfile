@@ -32,6 +32,20 @@ dnf install -y \
 rm -rf /usr/share/doc/just
 EOF
 
+RUN --mount=type=cache,target=/var/cache \
+    --mount=type=cache,target=/var/lib \
+    --mount=type=cache,target=/var/log \
+    --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/tmp \
+    <<EOF
+set -euox pipefail
+
+dnf install -y \
+    qemu-system-x86 \
+    qemu-img \
+    libvirt-daemon-kvm
+EOF
+
 # Install oh-my-zsh system-wide
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=cache,target=/var/lib \
@@ -174,5 +188,8 @@ RUN systemctl enable sshd.service
 
 # Enable QEMU Guest Agent for Proxmox
 RUN systemctl enable qemu-guest-agent.service
+
+# Enable libvirtd for QEMU VM management
+RUN systemctl enable libvirtd.service
 
 RUN bootc container lint
