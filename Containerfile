@@ -43,7 +43,9 @@ set -euox pipefail
 dnf install -y \
     qemu-system-x86 \
     qemu-img \
-    libvirt-daemon-kvm
+    libvirt-daemon-kvm \
+    mock \
+    rpmdevtools
 EOF
 
 # Install oh-my-zsh system-wide
