@@ -143,6 +143,8 @@ RUN --mount=type=cache,target=/var/cache \
     --mount=type=cache,target=/var/lib \
     --mount=type=cache,target=/var/log \
     --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/var/home \
+    --mount=type=tmpfs,target=/var/roothome \
     --mount=type=tmpfs,target=/tmp \
     <<EOF
 set -euox pipefail
@@ -153,10 +155,6 @@ dnf install -y procps-ng file
 # Convince the installer we are in CI
 touch /.dockerenv
 
-# Make these so script will work
-mkdir -p /var/home
-mkdir -p /var/roothome
-
 # Brew Install Script
 curl -fsSL -o /tmp/brew-install https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
 chmod +x /tmp/brew-install
@@ -164,7 +162,7 @@ chmod +x /tmp/brew-install
 tar --zstd -cf /usr/share/homebrew.tar.zst /home/linuxbrew/.linuxbrew
 
 # Clean up
-rm -rf /.dockerenv /var/home /var/roothome
+rm -rf /.dockerenv
 
 # Create linuxbrew user/group via sysusers.d
 cat > /usr/lib/sysusers.d/linuxbrew.conf << 'SYSUSERS'
