@@ -135,9 +135,9 @@ RUN --mount=type=cache,target=/var/cache \
     <<EOF
 set -euox pipefail
 
-# /home is a symlink to /var/home, but /var is a tmpfs mount
-# so we need to create /var/home for the symlink to resolve
-mkdir -p /var/home
+# /home and /root are symlinks to /var/home and /var/roothome respectively,
+# but /var is a tmpfs mount so we need to create these for the symlinks to resolve
+mkdir -p /var/home /var/roothome
 
 # Install Brew dependencies
 dnf install -y procps-ng file
@@ -149,7 +149,7 @@ touch /.dockerenv
 curl -fsSL -o /tmp/brew-install https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
 chmod +x /tmp/brew-install
 /tmp/brew-install
-tar --zstd -cf /usr/share/homebrew.tar.zst /home/linuxbrew/.linuxbrew
+tar --zstd -cf /usr/share/homebrew.tar.zst /var/home/linuxbrew/.linuxbrew
 
 # Clean up
 rm -rf /.dockerenv
@@ -161,8 +161,6 @@ SYSUSERS
 
 # Create directories via tmpfiles.d
 cat > /usr/lib/tmpfiles.d/homebrew.conf << 'TMPFILES'
-d /var/lib/homebrew 0755 linuxbrew linuxbrew - -
-d /var/cache/homebrew 0755 linuxbrew linuxbrew - -
 d /var/home/linuxbrew 0755 linuxbrew linuxbrew - -
 TMPFILES
 
