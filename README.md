@@ -10,7 +10,7 @@ An image-based development workstation built on [Fedora bootc](https://docs.fedo
 
 ## Features
 
-- **Immutable Base** — Built on Fedora bootc for atomic updates and rollbacks
+- **Atomic Base** — Built on Fedora bootc for atomic updates and rollbacks
 - **ZSH Shell** — Pre-configured with oh-my-zsh, autosuggestions, and syntax highlighting
 - **Docker** — Full Docker CE installation with BuildKit and Compose
 - **Homebrew** — Linux Homebrew for user-space package management
@@ -31,7 +31,7 @@ An image-based development workstation built on [Fedora bootc](https://docs.fedo
 
 ### Homebrew Packages
 
-Managed via `/etc/homebrew/Brewfile`:
+Managed via `/usr/share/homebrew/Brewfile` and `/etc/homebrew/Brewfile`:
 
 - `awscli` — AWS command-line interface
 - `claude-code` — Claude AI coding assistant
@@ -103,10 +103,7 @@ just clean      # Remove all build artifacts
 | Field | Value |
 |-------|-------|
 | Username | `admin` |
-| Password | `password` |
 | Groups | `wheel`, `docker` |
-
-> ⚠️ Change the password after first login!
 
 ## Customization
 
@@ -121,6 +118,7 @@ Edit `/etc/homebrew/Brewfile` to add system-wide Homebrew packages.
 Homebrew updates are managed by systemd timers:
 - `brew-update.timer` — Updates Homebrew formulae
 - `brew-upgrade.timer` — Upgrades installed packages
+- `brew-cleanup.timer` — Cleans outdated cache
 - `brew-bundle.service` — Installs packages from Brewfiles
 
 ### Customizing ZSH
@@ -133,28 +131,6 @@ The image is automatically built and pushed to `quay.io/rsturla-dev/workbench` v
 
 - **Triggers:** Push to main, weekly schedule, manual dispatch
 - **Tags:** `latest`, `YYYYMMDD` (date), short commit SHA
-
-## Project Structure
-
-```
-.
-├── .github/workflows/         # GitHub Actions CI/CD
-├── Contianerfile              # Container build definition
-├── config.toml                # Image builder blueprint (users, etc.)
-├── justfile                   # Build and VM management commands
-├── files/
-│   ├── etc/
-│   │   ├── default/useradd    # Default shell configuration
-│   │   ├── homebrew/          # Homebrew Brewfile
-│   │   ├── profile.d/         # Shell profile scripts
-│   │   └── skel/              # Skeleton files for new users
-│   └── usr/
-│       ├── bin/               # Git wrapper scripts
-│       └── lib/
-│           ├── systemd/system/  # Homebrew service units
-│           └── tmpfiles.d/      # Runtime directory configuration
-└── output/                    # Build artifacts (qcow2, ISO, etc.)
-```
 
 ## License
 
