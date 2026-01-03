@@ -1,0 +1,9 @@
+brew "awscli"
+brew "cosign"
+brew "dive"
+brew "gh"
+brew "glab"
+brew "oras"
+brew "syft"
+
+cask "claude-code"

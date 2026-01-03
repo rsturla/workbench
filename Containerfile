@@ -3,9 +3,7 @@ FROM quay.io/fedora/fedora-bootc:latest
 COPY files/ /
 
 RUN --mount=type=cache,target=/var/cache \
-    --mount=type=cache,target=/var/lib \
-    --mount=type=cache,target=/var/log \
-    --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
     <<EOF
 set -euox pipefail
@@ -33,9 +31,7 @@ rm -rf /usr/share/doc/just
 EOF
 
 RUN --mount=type=cache,target=/var/cache \
-    --mount=type=cache,target=/var/lib \
-    --mount=type=cache,target=/var/log \
-    --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
     <<EOF
 set -euox pipefail
@@ -50,9 +46,7 @@ EOF
 
 # Install oh-my-zsh system-wide
 RUN --mount=type=cache,target=/var/cache \
-    --mount=type=cache,target=/var/lib \
-    --mount=type=cache,target=/var/log \
-    --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
     <<EOF
 set -euox pipefail
@@ -74,9 +68,7 @@ EOF
 
 # Install Google Cloud CLI
 RUN --mount=type=cache,target=/var/cache \
-    --mount=type=cache,target=/var/lib \
-    --mount=type=cache,target=/var/log \
-    --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
     <<EOF
 set -euox pipefail
@@ -96,9 +88,7 @@ EOF
 
 # Install Docker
 RUN --mount=type=cache,target=/var/cache \
-    --mount=type=cache,target=/var/lib \
-    --mount=type=cache,target=/var/log \
-    --mount=type=cache,target=/var/tmp \
+    --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
     <<EOF
 set -euox pipefail
@@ -140,14 +130,14 @@ EOF
 
 # Install Homebrew
 RUN --mount=type=cache,target=/var/cache \
-    --mount=type=cache,target=/var/lib \
-    --mount=type=cache,target=/var/log \
-    --mount=type=cache,target=/var/tmp \
-    --mount=type=tmpfs,target=/var/home \
-    --mount=type=tmpfs,target=/var/roothome \
+    --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
     <<EOF
 set -euox pipefail
+
+# /home is a symlink to /var/home, but /var is a tmpfs mount
+# so we need to create /var/home for the symlink to resolve
+mkdir -p /var/home
 
 # Install Brew dependencies
 dnf install -y procps-ng file
@@ -176,20 +166,23 @@ d /var/cache/homebrew 0755 linuxbrew linuxbrew - -
 d /var/home/linuxbrew 0755 linuxbrew linuxbrew - -
 TMPFILES
 
+semanage fcontext -a -t usr_t "/var/home/linuxbrew/.linuxbrew(/.*)?"
+
 # Enable Systemd services
 systemctl enable brew-setup.service
 systemctl enable brew-upgrade.timer
 systemctl enable brew-update.timer
+systemctl enable brew-cleanup.timer
 systemctl enable brew-bundle.service
 EOF
 
-# Enable SSH server
-RUN systemctl enable sshd.service
+# Enable services
+RUN <<EOF
+set -euox pipefail
 
-# Enable QEMU Guest Agent for Proxmox
-RUN systemctl enable qemu-guest-agent.service
-
-# Enable libvirtd for QEMU VM management
-RUN systemctl enable libvirtd.service
+systemctl enable sshd.service
+systemctl enable qemu-guest-agent.service
+systemctl enable libvirtd.service
+EOF
 
 RUN bootc container lint
