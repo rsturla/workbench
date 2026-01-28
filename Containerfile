@@ -43,7 +43,8 @@ dnf install -y \
     mock \
     rpmdevtools \
     askalono-cli \
-    go-vendor-tools
+    go-vendor-tools \
+    packit
 EOF
 
 # Install oh-my-zsh system-wide
