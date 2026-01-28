@@ -42,7 +42,8 @@ dnf install -y \
     libvirt-daemon-kvm \
     mock \
     rpmdevtools \
-    askalono-cli
+    askalono-cli \
+    go-vendor-tools
 EOF
 
 # Install oh-my-zsh system-wide
