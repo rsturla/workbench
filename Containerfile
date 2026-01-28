@@ -41,7 +41,8 @@ dnf install -y \
     qemu-img \
     libvirt-daemon-kvm \
     mock \
-    rpmdevtools
+    rpmdevtools \
+    askalono-cli
 EOF
 
 # Install oh-my-zsh system-wide
