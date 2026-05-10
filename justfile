@@ -10,7 +10,7 @@ output_dir := "output"
 
 # Build the container image (rootless)
 build:
-    podman build -t {{ image_ref }} --iidfile /tmp/image.id -f Containerfile .
+    podman build -t {{ image_ref }} --skip-unused-stages=false --volume $(pwd):/run/src:Z --iidfile /tmp/image.id -f Containerfile .
 
 # Build the installer container image (rootless)
 build-installer:

@@ -1,5 +1,6 @@
 # Build outputs
 output/
+out.ociarchive
 
 # Cosign private keys - NEVER commit these
 cosign.key

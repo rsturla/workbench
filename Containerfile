@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-bootc:latest
+FROM quay.io/fedora/fedora-bootc:latest AS build
 
 COPY files/ /
 
@@ -186,4 +186,38 @@ systemctl enable qemu-guest-agent.service
 systemctl enable libvirtd.service
 EOF
 
+# Tag non-RPM files with chunkah xattr components so they land in the correct
+# RPM component layers during rechunking.
+RUN <<EOF
+set -euox pipefail
+
+# Kernel modules — dracut generates initramfs and other files at install time
+# which are unowned by RPM. Tag the entire /usr/lib/modules tree so they merge
+# into the rpm/kernel component.
+for kdir in /usr/lib/modules/*/; do
+  setfattr -n user.component -v "rpm/kernel" "$kdir"
+  find "$kdir" -mindepth 1 -exec setfattr -n user.component -v "rpm/kernel" {} \;
+done
+
+# SELinux compiled policy — generated at install time by selinux-policy-targeted.
+# All change together when the selinux-policy SRPM is updated.
+setfattr -n user.component -v "rpm/selinux-policy" /etc/selinux
+find /etc/selinux -mindepth 1 -exec setfattr -n user.component -v "rpm/selinux-policy" {} \;
+EOF
+
 RUN bootc container lint
+
+# Rechunk the image into component-aligned OCI layers via chunkah.
+# Build must use --skip-unused-stages=false for the oci-archive stage to work.
+# See https://github.com/coreos/chunkah#splitting-an-image-at-build-time-buildahpodman-only
+FROM quay.io/coreos/chunkah:dev AS chunkah
+RUN --mount=from=build,src=/,target=/chunkah,ro \
+  chunkah build \
+  --prune /sysroot/ \
+  --max-layers 448 \
+  > /run/src/out.ociarchive
+
+FROM oci-archive:out.ociarchive
+
+LABEL containers.bootc=1
+LABEL ostree.bootable=true
