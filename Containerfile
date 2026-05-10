@@ -5,6 +5,7 @@ COPY files/ /
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/run \
     <<EOF
 set -euox pipefail
 
@@ -33,6 +34,7 @@ EOF
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/run \
     <<EOF
 set -euox pipefail
 
@@ -51,6 +53,7 @@ EOF
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/run \
     <<EOF
 set -euox pipefail
 
@@ -73,6 +76,7 @@ EOF
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/run \
     <<EOF
 set -euox pipefail
 
@@ -93,6 +97,7 @@ EOF
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/run \
     <<EOF
 set -euox pipefail
 
@@ -135,6 +140,7 @@ EOF
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=tmpfs,target=/var \
     --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/run \
     <<EOF
 set -euox pipefail
 
@@ -178,7 +184,8 @@ systemctl enable brew-bundle.service
 EOF
 
 # Enable services
-RUN <<EOF
+RUN --mount=type=tmpfs,target=/run \
+    <<EOF
 set -euox pipefail
 
 systemctl enable sshd.service
@@ -188,7 +195,8 @@ EOF
 
 # Tag non-RPM files with chunkah xattr components so they land in the correct
 # RPM component layers during rechunking.
-RUN <<EOF
+RUN --mount=type=tmpfs,target=/run \
+    <<EOF
 set -euox pipefail
 
 # Kernel modules — dracut generates initramfs and other files at install time
