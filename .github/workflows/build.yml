@@ -79,21 +79,6 @@ jobs:
           just build
           echo "image_id=$(cat /tmp/image.id)" >> "$GITHUB_OUTPUT"
 
-      # Generate the SBOM from the locally-built image. Scanning a saved
-      # oci-archive avoids re-pulling the multi-hundred-layer image from the
-      # registry, which previously stalled the runner until it was cancelled.
-      - name: Install syft
-        uses: anchore/sbom-action/download-syft@43a17d6e7add2b5535efe4dcae9952337c479a93 # v0.20.11
-
-      - name: Generate SBOM
-        env:
-          IMAGE_ID: ${{ steps.build.outputs.image_id }}
-        run: |
-          set -xeuo pipefail
-          podman save --format oci-archive -o /tmp/image.oci "$IMAGE_ID"
-          syft "oci-archive:/tmp/image.oci" --output spdx-json=sbom.spdx.json
-          jq . sbom.spdx.json > /dev/null
-
       - name: Login to Quay.io
         if: env.PUSH_IMAGE == 'true'
         env:
@@ -133,8 +118,32 @@ jobs:
             --yes \
             "$IMAGE_REGISTRY/$IMAGE_NAME@$DIGEST"
 
-      - name: Attach SBOM to image
+      # The image is now pushed and signed. Everything below is best-effort SBOM
+      # generation. It runs after the image is published and is marked
+      # continue-on-error so a syft or cosign-attest failure never blocks an
+      # image update. The SBOM is built from the locally-built image (a saved
+      # oci-archive), which avoids re-pulling the many-layer image from the
+      # registry.
+      - name: Install syft
         if: env.PUSH_IMAGE == 'true'
+        continue-on-error: true
+        uses: anchore/sbom-action/download-syft@43a17d6e7add2b5535efe4dcae9952337c479a93 # v0.20.11
+
+      - name: Generate SBOM
+        if: env.PUSH_IMAGE == 'true'
+        id: sbom
+        continue-on-error: true
+        env:
+          IMAGE_ID: ${{ steps.build.outputs.image_id }}
+        run: |
+          set -xeuo pipefail
+          podman save --format oci-archive -o /tmp/image.oci "$IMAGE_ID"
+          syft "oci-archive:/tmp/image.oci" --output spdx-json=sbom.spdx.json
+          jq . sbom.spdx.json > /dev/null
+
+      - name: Attach SBOM to image
+        if: env.PUSH_IMAGE == 'true' && steps.sbom.outcome == 'success'
+        continue-on-error: true
         env:
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
