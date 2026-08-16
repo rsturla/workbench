@@ -74,6 +74,15 @@ https://asd-ste100.org.
 
 ## Punctuation and numbers
 
-- Use simple punctuation. Avoid the semicolon; use two sentences instead.
+- Use simple punctuation. Do not use a semicolon. Use two sentences instead.
+- Use a hyphen to connect words when it makes the meaning clear. Example:
+  "read-only file".
+- Do not use a slash ("/") to mean "and" or "or". Write the word instead.
+  Example: write "start or stop", not "start/stop".
+- Use a colon to introduce a list.
+- Use parentheses only for a short reference or an abbreviation. Do not put a
+  full sentence in parentheses.
+- Use quotation marks for text the reader types or sees on screen.
 - Use numerals for numbers, for example "3" not "three".
-- Use a consistent format for units, dates, and times.
+- Use a consistent format for units, dates, and times. Put a space between a
+  number and its unit. Example: "512 MiB".
