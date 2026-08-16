@@ -21,14 +21,12 @@ RUN --mount=type=cache,target=/var/cache \
     biosdevname \
     prefixdevname
 
-# shim-x64 is marked installed but the files are not in the expected
-# place for osbuild's grub2.iso stage - reinstall to fix
-RUN --mount=type=cache,target=/var/cache \
-    --mount=type=cache,target=/var/lib \
-    --mount=type=cache,target=/var/log \
-    --mount=type=cache,target=/var/tmp \
-    --mount=type=tmpfs,target=/tmp \
-    dnf reinstall -y shim-x64
+# Fedora 43+ moved the shim and grub2 EFI binaries from /boot to /usr/lib/efi
+# (see https://fedoraproject.org/wiki/Changes/BootLoaderUpdatesPhase1). osbuild's
+# installer ISO stage still reads /boot/efi/EFI/fedora, so copy the binaries back
+# into place. On Fedora 42 the fix was `dnf reinstall shim-x64`, which no longer
+# works. See https://osbuild.org/docs/bootc/
+RUN mkdir -p /boot/efi && cp -ra /usr/lib/efi/*/*/EFI /boot/efi
 
 # lorax wants to create a symlink in /mnt which points to /var/mnt
 # on bootc but /var/mnt does not exist on some images
