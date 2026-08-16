@@ -109,7 +109,11 @@ just clean      # Remove all build artifacts
 
 ### Adding System Packages
 
-Edit the `Contianerfile` and add packages to the `dnf install` commands.
+Build logic lives in numbered scripts under `scripts/_base/`, run in order by
+`scripts/setup.sh` during the image build. To add packages, edit the relevant
+script (e.g. `scripts/_base/010-base-packages.sh`) or add a new numbered
+script. Static configuration files ship under `files/` and are copied verbatim
+into the image root.
 
 ### Adding Homebrew Packages
 
@@ -131,6 +135,18 @@ The image is automatically built and pushed to `quay.io/rsturla-dev/workbench` v
 
 - **Triggers:** Push to main, weekly schedule, manual dispatch
 - **Tags:** `latest`, `YYYYMMDD` (date), short commit SHA
+- **Rechunking:** Final image is split into component-aligned OCI layers with
+  [chunkah](https://github.com/coreos/chunkah) for efficient delta updates
+- **Supply chain:** Images are signed with cosign and ship an SBOM (SPDX)
+  attestation generated from the locally-built image
+- **Workflows:** `build.yml` (build/push/sign), `pre-commit.yml` (lint), and
+  `renovate.yml` (config validation)
+
+Run the linters locally before pushing:
+
+```bash
+pre-commit run --all-files
+```
 
 ## License
 

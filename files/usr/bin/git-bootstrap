@@ -63,7 +63,7 @@ if [[ "$WORKTREE" = true ]]; then
     WORKTREE_PATH="$GIT_DIR/default/$BASE_BRANCH"
     if [[ -f "$WORKTREE_PATH/.git" ]]; then
         relative_gitdir=$(git -C "$WORKTREE_PATH" rev-parse --path-format=relative --git-common-dir)
-        worktree_name=$(basename "$(cat "$WORKTREE_PATH/.git" | cut -d' ' -f2)")
+        worktree_name=$(basename "$(cut -d' ' -f2 "$WORKTREE_PATH/.git")")
         echo "gitdir: ${relative_gitdir}/worktrees/${worktree_name}" > "$WORKTREE_PATH/.git"
     fi
 else

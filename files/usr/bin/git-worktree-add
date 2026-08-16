@@ -24,7 +24,7 @@ if [[ -n "$worktree_path" && -f "$worktree_path/.git" ]]; then
 
     # Extract the worktree-specific directory from the .git file
     # The .git file contains something like: gitdir: /abs/path/.git/worktrees/name
-    worktree_name=$(basename "$(cat "$worktree_path/.git" | cut -d' ' -f2)")
+    worktree_name=$(basename "$(cut -d' ' -f2 "$worktree_path/.git")")
 
     # Write the new relative path to .git file
     echo "gitdir: ${relative_gitdir}/worktrees/${worktree_name}" > "$worktree_path/.git"

@@ -56,7 +56,7 @@ build-qcow2: build _transfer-image
         ghcr.io/osbuild/image-builder-cli \
         build qcow2 \
         --bootc-ref {{ image_ref }} \
-        --bootc-default-fs ext4 \
+        --bootc-default-fs xfs \
         --blueprint /config.toml \
         --output-dir /output
     sudo chown -R $(id -u):$(id -g) {{ output_dir }}
@@ -75,7 +75,7 @@ build-raw: build _transfer-image
         ghcr.io/osbuild/image-builder-cli \
         build raw \
         --bootc-ref {{ image_ref }} \
-        --bootc-default-fs ext4 \
+        --bootc-default-fs xfs \
         --blueprint /config.toml \
         --output-dir /output
     sudo chown -R $(id -u):$(id -g) {{ output_dir }}
@@ -95,7 +95,7 @@ build-iso: build build-installer _transfer-image _transfer-installer-image
         build bootc-installer \
         --bootc-ref {{ installer_ref }} \
         --bootc-installer-payload-ref {{ image_ref }} \
-        --bootc-default-fs ext4 \
+        --bootc-default-fs xfs \
         --blueprint /config.toml \
         --output-dir /output
     sudo chown -R $(id -u):$(id -g) {{ output_dir }}

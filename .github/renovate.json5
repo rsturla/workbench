@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  // Use the best-practices preset, and allow settings to be overridden below.
+  "extends": [
+    "config:best-practices"
+  ],
+
+  "packageRules": [
+    {
+      // Automatically merge GitHub Actions updates for low-risk change types.
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest"],
+      "automerge": true
+    },
+    {
+      // Automatically merge Containerfile base-image digest bumps.
+      "matchManagers": ["dockerfile"],
+      "matchUpdateTypes": ["digest"],
+      "automerge": true
+    }
+  ]
+}
