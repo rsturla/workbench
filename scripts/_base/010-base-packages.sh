@@ -13,6 +13,8 @@ dnf install -y \
     tar \
     unzip \
     openssl-devel \
+    patch \
+    createrepo_c \
     just \
     fzf \
     zsh \
