@@ -115,9 +115,14 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           DIGEST: ${{ steps.push.outputs.digest }}
         run: |
+          # Key-based signing. Skip the public rekor transparency log so the job
+          # does not depend on an external service that can time out and block
+          # the sign step. Verify with `cosign verify --key <pub>
+          # --insecure-ignore-tlog=true`.
           cosign sign --key env://COSIGN_PRIVATE_KEY \
             --new-bundle-format=false \
             --use-signing-config=false \
+            --tlog-upload=false \
             --yes \
             "$IMAGE_REGISTRY/$IMAGE_NAME@$DIGEST"
 
@@ -155,5 +160,6 @@ jobs:
           cosign attest --key env://COSIGN_PRIVATE_KEY \
             --type spdxjson \
             --predicate sbom.spdx.json \
+            --tlog-upload=false \
             --yes \
             "$IMAGE_REGISTRY/$IMAGE_NAME@$DIGEST"
