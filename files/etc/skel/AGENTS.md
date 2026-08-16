@@ -28,3 +28,5 @@ For a rewrite or a compliance check, use the `asd-ste100` skill.
 - Use the imperative mood. The body says what the change does and why, not how.
 - Keep each pull request on one topic. The description gives a short summary,
   the main changes, and the verification steps.
+
+For a pull request body, use the `writing-pull-requests` skill.
