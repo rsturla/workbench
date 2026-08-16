@@ -10,3 +10,5 @@ brew "oras"
 brew "syft"
 brew "tektoncd-cli"
 brew "uv"
+
+cask "codex"
