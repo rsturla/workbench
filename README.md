@@ -138,7 +138,7 @@ updates when the image changes (unlike `/etc/skel`, which only applies at user
 creation):
 
 - `~/AGENTS.md` and `~/.claude/CLAUDE.md` → the managed instructions
-- `~/.agents/skills/<name>` → individual managed skills (`asd-ste100`,
+- `~/.agents/skills/<name>` → individual managed skills (`asd-ste100`, `unslop`,
   `writing-pull-requests`), with `~/.claude/skills` pointing at the same directory
 
 The skills directory itself is writable, so users can install their own skills
