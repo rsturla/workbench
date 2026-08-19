@@ -129,6 +129,22 @@ Homebrew updates are managed by systemd timers:
 
 The default `.zshrc` is installed from `/etc/skel/.zshrc`. Users can customize their own `~/.zshrc` after login.
 
+### AI agent configuration
+
+Managed agent instructions and skills ship read-only under
+`/usr/share/workbench/agents/` and are versioned with the image. On every login,
+`user-tmpfiles.d` projects them into each user's home, so existing users pick up
+updates when the image changes (unlike `/etc/skel`, which only applies at user
+creation):
+
+- `~/AGENTS.md` and `~/.claude/CLAUDE.md` → the managed instructions
+- `~/.agents/skills/<name>` → individual managed skills (`asd-ste100`,
+  `writing-pull-requests`), with `~/.claude/skills` pointing at the same directory
+
+The skills directory itself is writable, so users can install their own skills
+alongside the managed ones. Personal Claude Code instructions can be added under
+`~/.claude/rules/` without affecting the managed baseline.
+
 ## CI/CD
 
 The image is automatically built and pushed to `quay.io/rsturla-dev/workbench` via GitHub Actions:
