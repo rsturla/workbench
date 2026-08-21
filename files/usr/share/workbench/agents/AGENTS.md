@@ -20,6 +20,13 @@ For a rewrite or a compliance check, use the `asd-ste100` skill.
 - Always use a virtual environment. Do not use the system Python.
 - Use `uv`: `uv venv`, `uv pip install <package>`, `uv run <command>`.
 
+## Git startup
+
+- Before the first edit, fetch `origin` and check the worktree status.
+- Ensure the current branch, including a harness-created branch, contains the
+  latest `origin/main`. Fast-forward `main` or rebase a clean task branch.
+- Do not update a branch with local changes. Report it as stale.
+
 ## Commits and pull requests
 
 - Write commit and pull request titles in the Conventional Commits form
