@@ -139,7 +139,12 @@ creation):
 
 - `~/AGENTS.md` and `~/.claude/CLAUDE.md` → the managed instructions
 - `~/.agents/skills/<name>` → individual managed skills (`asd-ste100`, `unslop`,
-  `writing-pull-requests`), with `~/.claude/skills` pointing at the same directory
+  `use-modern-go`, `writing-pull-requests`), with `~/.claude/skills` pointing at
+  the same directory
+
+The `use-modern-go` skill applies modern, version-specific Go guidance before
+Go code changes. It uses the Go version from `go.mod` or `go.work`. On first use,
+it installs the `go-modern-guidelines` CLI into the user's cache.
 
 The skills directory itself is writable, so users can install their own skills
 alongside the managed ones. Personal Claude Code instructions can be added under
