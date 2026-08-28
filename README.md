@@ -138,9 +138,16 @@ updates when the image changes (unlike `/etc/skel`, which only applies at user
 creation):
 
 - `~/AGENTS.md` and `~/.claude/CLAUDE.md` → the managed instructions
-- `~/.agents/skills/<name>` → individual managed skills (`asd-ste100`, `unslop`,
-  `use-modern-go`, `writing-pull-requests`), with `~/.claude/skills` pointing at
-  the same directory
+- `~/.agents/skills/<name>` → individual managed skills (`asd-ste100`,
+  `codebase-design`, `domain-modeling`, `grilling`,
+  `improve-codebase-architecture`, `unslop`, `use-modern-go`,
+  `writing-pull-requests`), with `~/.claude/skills` pointing at the same
+  directory
+
+The `improve-codebase-architecture` skill scans for shallow modules and writes
+an HTML report with deepening opportunities. Invoke it with
+`/improve-codebase-architecture`. It uses `codebase-design`, `grilling`, and
+`domain-modeling` for its architecture vocabulary and follow-up review.
 
 The `use-modern-go` skill applies modern, version-specific Go guidance before
 Go code changes. It uses the Go version from `go.mod` or `go.work`. On first use,
