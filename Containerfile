@@ -8,7 +8,7 @@ FROM scratch AS ctx
 COPY ./scripts /scripts
 COPY ./files /files
 
-FROM quay.io/fedora/fedora-bootc:latest AS build
+FROM quay.io/fedora/fedora-bootc:latest@sha256:5ab8ee5189bb0f3870279723f5343474df002d8d6f46564702b3ad3ba7382d98 AS build
 
 COPY --from=ctx files/ /
 
@@ -27,7 +27,7 @@ RUN --network=none \
 # Rechunk the image into component-aligned OCI layers via chunkah.
 # Build must use --skip-unused-stages=false for the oci-archive stage to work.
 # See https://github.com/coreos/chunkah#splitting-an-image-at-build-time-buildahpodman-only
-FROM quay.io/coreos/chunkah:dev AS chunkah
+FROM quay.io/coreos/chunkah:dev@sha256:5acac25f72a337f200541a921d89f2f201e067faab7ea932693e5437df63c999 AS chunkah
 RUN --mount=from=build,src=/,target=/chunkah,ro \
   chunkah build \
   --prune /sysroot/ \
