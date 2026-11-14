@@ -1,6 +1,6 @@
 # Installer container for building bootc-installer ISOs
 # This container includes Anaconda and required tools for ISO creation
-FROM quay.io/fedora/fedora-bootc:latest
+FROM quay.io/fedora/fedora-bootc:latest@sha256:17227a17c0bb9222918881e27f254e219eb3808ceb4399e26322bbd2e77932bc
 
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=cache,target=/var/lib \
